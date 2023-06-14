@@ -1,0 +1,1507 @@
+												COMPUTER SYSTEMS
+
+C/C# 
+	-Procedural
+	-Structured
+	-Imperativny programovaci jazyk
+
+	-Staticky typovany jazyk!
+	-Constructs are efficiently mapped to machine instructions
+
+
+	Rozdiel medzi DYNAMICKY TYPOVANYMI JAZYKMI a STATICKY TYPOVANYMI
+		DYNAMICKY:
+			-variables are just mnemonic holders
+			-Values are dynamically managed (collective HEAP)
+
+		STATICKY:
+			-Variables allocate space memory (local variable on the STACK)
+			-Values are placed directly to that memory on assigment
+
+	
+	Constant Literals:
+		Integers:	
+			-Decimal
+			-Hexadecimal
+			-Binary
+			-Octal
+		Floating Point
+		Boolean 
+		String 
+		Char
+		Escape sequence:
+			\n
+			\r "carriage return"
+			\t "tab"
+
+	Basic types:
+		Integer Types:
+			char(8b),int(16-32)
+			short(16),long(64),long long(64),signed,unsigned
+			size_t
+		Floating point types:
+			float(32), double(64)
+		Other types:
+			void,bool
+
+
+	Named values stored in memory:
+		Must be declared before first use
+	
+	Unconditional control flow redirection:
+		-goto
+		-not very good to use
+
+	Expresion operators:	
+		-sizeof:
+			variable/type size in bytes
+
+	Arrays:
+		- A sequence of elements of the same type
+		- zabera continuos block of memory
+		-Zero-based index, the fixed size is given at compilation
+		
+	Strings:
+		-Sequence(array) of characters ended with ZERO(NUL) character
+		-NUL character(zero-byte) is added automatically
+		-represented as pointer to the first character 
+		-Array of characters is not necceserally string!
+
+
+!	Memory Aligment:
+		-A type of size X needs to be placed at adress A, so that A%X = 0
+			e.g 32-bit integer must be placed only on addresses divisible by 4!
+
+
+
+	Constants:
+		Basic Constants:
+			- const int the_answer = 43;
+		Compile time constants:
+			-Do not exist in memory
+			- constexpr
+	Enumerations:
+		-special type with predefined set of allowed values
+	
+
+	Preprocessor:
+		-Text placed replacement handled as the first step of compilation
+		#include <algorithm>
+		#define
+		#ifdef
+		#endif
+	
+	Application Entry-point:
+		Function named main
+			-the return value is the exit  code of the process(defaultne vracia 0)
+	
+	Pointers:
+		Memory address abstraction
+			-pointer = number that holds address(index of starting byte in memory)
+			-pointers are typed
+				to je treba udat aky typ ocakavame na mieste v pamati na ktore pointer ukazuje
+				pointers of different types are INCOMPATIBLE
+
+
+==============================================================================================
+
+CPU
+
+	Von Neumann architecture
+		-Systemova architektura:
+			-program a data v rovnakej pamati
+		-Jedna zdielana zbernica = system bus
+
+	Harvard architecture
+		-oddelene pamatove priestory
+			-separatnymi zbernicami
+			-separatne adresovanie (instrukcie)
+			
+	CPU architektura:
+		-Instruction set (ISA)
+		-Hardware architecture	
+
+	Co je CPU?
+		- jednoducha masina ktora vykonava instrukcie
+		- Registre, pamatove kontrolery, I/O
+	
+	Instrukcia:
+		-jednodnuchy command pre CPU
+			-binary encoding(CPU), assembler(programmers)
+		-Operands
+			-depending on ISA - maximalne 1,2 alebo 3 niektore mozu byt aj implicitne
+			-register, immediate value
+	
+
+		Instruction cycle:(sub-steps vykonane v kazdej instrukcii(niektore mozu byt preskocene))
+			-load instruction from address stored in  IP register
+			-Decode instruction
+			-Load operands
+			-Execute operation
+			-store the result
+			-Increment the IP
+
+
+	Instruction Classes:	
+		-Load instructions
+			-memory -> register
+			-Take a long time to execute
+		-Store instructions:
+			Register/immediate -> memory
+		-Move instruction:	
+			-medzi registrami
+		-Aritmetic and logic instructions
+		-Jumps:
+			-unconditional/conditional(test required)
+			-Dirext / indirect / relative
+		-Call, Return
+	
+	Registers:
+		-Types:
+			-general,integer,floating point
+			-address,branch,flags,predicate(0=neprevedie,1=prevedie)
+			-application,system
+			-vector
+		-Naming
+		-Aliasing
+
+
+
+	MIPS = Simple Assembler:
+		-Execution Enviroment
+			-32-bit(almost general) registers r0-r31
+				-r0 is always 0, zapisy su ignorovane
+				-r31 is a link register for the jal instruction
+			-no stack(register)
+			-no flags
+			-Program counter(PC)
+		
+		-Aplication binary Interface (ABI)
+			-additional specification that accompanies ISA
+			-Prescribes how CPU should be used
+				-dolezite pre inzinierov compilerov
+			-Binary interfaces between	applications
+				-typical utilization (meaning) of registers
+				-stack implementation and layout
+				-function call conventions
+		-Jumps:
+			-j addr:
+				PC = addr
+			-j $rs:
+				PC = R[rs]
+			-jal addr	(jump and link)
+				-R[31] = PC+4 (jal instruction takes 4bytes in memory)
+				-PC = addr
+		-Label:
+			-a placeholder that marks a place in the code, the actual address is computed by a 	compiler. example: 
+			label:
+				jal fnc
+
+		
+		-Conditional jumps:
+			-beq $rs, $rt, addr (if R[rs] == R[rt] then PC = addr else PC = PC+4)
+			-bne $rs, $rt, addr (analogicke pre nerovna sa)
+			
+		-Testing:
+			-slt/sltu $rd,$rs,$rt   (if R[rs] < R[rt] then R[rd] = 1 else R[rd] = 0)
+			-slti/stiu $rd,$rs,imm16.   (If R[rs] < signtext/zeroext(imm16) then R[rd] = 1 else R[rd] = 0)
+
+
+		-Flags:
+			-only used by some ISA
+			-Control execution
+			-Check status of the last instruction
+			-usual flags:
+				-Z-zeroflag
+				-S-sign flag
+				-C-carry flag
+
+	ISA consolidation
+		-instruction set architecture
+			-abstract model of CPU
+		-Classification
+			-CISC = Complex Instruction Set Computer
+			-RISC = Reduced Instruction Set Computer
+			-VLIW = Very long Instruction Word
+			-EPIC = Explicitly Parallel Instruction Computer
+		-Orthogonality
+			-accumulator
+		-Load-Execute-Store
+
+==============================================================================================
+
+HARDWARE ARCHITECTURE
+	-CPU comprise
+		-Memory contoller
+		-Cache hierarchy
+		-Core
+			-Registers
+				-types
+			-Logical processor
+				-hyper threading
+
+	-Pipeline:
+		-14-19 stages
+		-prechadzania "pipeliny" instrukcii takze sa vykonava jedna po druhej
+		napriklad takto:
+		IF | ID | EX | MEM | WB
+		|		|	|		|		\
+	Instruction\  \ 		 \ 		Writeback
+	fetching	  \  \		  \	
+					\  \		\
+			Instruction\		 \
+			Decode		  \		Memory 
+						   \	fetching
+						Execution
+
+	-typycal pipelines = long stages (~20stages)
+	-problem: what if pipeline get invalidated
+	-problem: conditional jumps
+
+
+
+==============================================================================================
+
+
+MEMORY
+	Each memory is organized into memory cells-bits
+	Bits are grouped into words of fixed length:
+		-1, 2, 4, 4, 8, 16, 32, 64 and 128 bits
+	Each word can be accessed by a binary adress
+	
+	Physical view:
+		-2D ARRAY
+			-row x column(much faster access)
+			-Select, access, deselect row
+			-Timing:
+				CAS(tCL) = Column Access Strobe
+				tRCD = Row Address to Column Address delay
+				tRP = Row Precharge
+				RAS	(tRAS) = Row Active Time
+	Signed numbers:
+		2s complement
+			Bitwise negation +1
+			one 0
+			Compatible with unsigned aritmetic
+			Asymetric range
+	Floats:
+		IEEE 754 floating point numbers
+			Hidden bit convention
+				Single precision
+				Double precision
+			Exponent (unsigned)
+				Bias (SP = 127, DP = 1023)
+			Value
+				V = (-1)^(sign) x significand x 2^(exponent - bias)
+				significand = value part, much bigger than the exponent
+
+			1bit	8bits					23bits
+			|sign|		exponent		|			Mantissa			|
+
+	Endianess
+		Big endian
+			MSB first
+		Small endian
+			LSB first
+
+	Data alligment 
+		inner padding:
+		-Modern CPUs require data in memory  aligned to their size
+			e.g, integer (4B) must have address aligned to 4
+			Structure is aligned to largest data type available on CPU (e.g. 16B)
+		-Adresa na ktorej je ulozeny nas typ napr 4B integer musi byt delitelna 4!!!!
+	
+		Outer padding:
+			-Struktury su vzdy aligned na nasobok najvavcsi typ ktory obsahuje
+			aligned to the largest data type 
+
+	Memory Managment:
+		Global variables
+			-Allocates at the beginning, fixed place, released when application terminates
+		Local variables, function arguments
+			-Allocated at the stack by 	shifting stack pointer
+			-stack growth, reallocation
+		Dynamically allocated variables
+			-Allocated explicitly  by programmer (malloc, new...)
+			-Special dedicated memory block for these allocations
+			-ked nepotrebujem uz pouzivanu pamat musim ju uvolnit
+			
+	Memory allocation
+		-Task
+			locate a block of unused memory of suficient size
+			allocate portions from a large pool of memory	
+		-Lifecycle
+			Allocate a block
+				different strategies, allocators
+			Use the block
+			Free the block
+				explicitly, garbage collector
+
+	Fragmentation
+		Internal
+			allocated more memory than needed in a block
+		External
+			Free memory is separated into small blocks and 	interspersed	by allocated memory
+
+	Dynamic memory allocation
+		Contiguous  allocation of variable size
+		Free block evidence
+			-Linked list
+			-Bitmap
+				each bit represents a block of a fixed size
+
+	ALLOCATION ALGORITMS
+		First Fit
+			Start from the beginning, find the FIRST free space big enough to accomodate the required block
+		Pros: fast,simple
+		Cons: can divide larger blocks
+
+		Best Fit
+			Starts from the beginning, find the smallest space big enough.(scan the whole heap)
+			Pros: keeps large blocks
+			Cons: slower, creates many tiny blocks
+			
+		Next Fit
+			Like the first fit but starts from the last position(position of last allocation)
+			Pros:fast,doesnt make fragmentation on the start of the heap
+			- this is the one usually used
+		Worst Fit
+			Start 	from the beginning, find the smallest space big enough
+			Cons: divide large blocks
+			-nepouzivany, total napicu
+
+		napr: malloc nepouziva ziaden z tychto algoritmov ale nove komplexnejsie
+
+
+	BUDDY MEMORY ALLOCATION
+		all blocks of 2^n size
+			address aligned to 2^n
+		Find the smallest 2^n block fitting the required size	
+			-list of free blocks lists with fixed sizes 2^n
+		If there are no small blocks, create them by dividing the larger blocks
+			-buddies
+				find the budddy address by XORing my address with the block size
+		Merge blocks  back when both buddies are free
+		significant internal fragmentation
+
+
+	CACHE
+		HW or even SW
+			-structure holding data
+				data loads/computations(for the first time) is slow/expensive
+				Future request for that data can be served faster	
+				Limited(fixed) size
+
+			-Generic	cache operation
+				Make a request for data
+				Are data placed in a cache??
+				ak su vrat ich ak nie preved pomale vypocitanie potrebneho/access
+
+		Cache  in CPU
+			HIDES MEMORY LATENCY	
+			Based on the locality of reference
+				Teoria: most applications require the same small part of memory all over again
+			CPU cache operation
+				make a request for data in memory
+				Are data placed in a cache? Looks in all levels of cache in the cpu from the fastest L1 to slowest LLC
+		
+				If they are, return them to the execution unit in a CPU core, otherwise do a full memory access
+
+			Terminology:
+					Cache line	/entry
+						Caches are organized in a lines
+							usual size is about 64B
+							aligned
+							aj ked potrebujem len jeden byte z cache dostanem cely 64B blok
+							
+					Cache hit
+						success
+						request served from the cache
+						Succes rate is about 97%
+					Cache miss
+						Data not found in cache hierarchy, do a full memory access
+						Load data from the memory to a cache line
+								select either a free cache line or select a victim cache line
+								store modified cache lines back to the memory
+					Cache line state
+						-MESI protocol
+						each cash line is acompanied by 2 bits = 4 states
+						state tells something about state in the cache
+						base for the comunication
+
+
+			ASOCIATIVE MEMORY (important)
+					ulozene kusky pamate RAM do cache
+	
+					uses KEYS and VALUES
+					requesting values by their keys
+					
+					very fast
+					content based addressing
+					used in CPU caches
+		
+		NUMA
+			multiprocesors
+				SMP = Symetric Multiprocessing
+				NUMA = Non-Uniform Memory Access
+	
+==============================================================================================
+
+PROGRAMMING LANGUAGES
+	Source Code ---> COMPILER --->Executable for my operating system
+							|
+							|
+						error messages
+
+	GRAMMAR:
+		Formal description of language
+			Rules	
+			Lexical elements
+			
+	view of translation:
+		preprocesor = zoberie zdrojak a priradi k nemu napr #include subory na zaciatok
+		-> toto sa da extraktovat ako .pp
+		COMPILER = transformuje zdrojak na instrukcie .asm <- Interface (lib headers)
+		Assembler ->	.obj  = object files that need to be assembled to final file
+		Linker -> spaja .obj files dokopy -> Executable code
+
+	
+	library 
+		collection of compiled/precompiled source models and other resources
+		static linking(.lib) vs dynamic linking (.dll, .so)
+	Linking 
+		Integrating the result of the different translation and libraries together into
+		one executable for given OS
+		Relocations, position-independent code ()
+	Loader
+		Part of OS, loads the executable into memory(and its dynamically linked libs)
+		Relocations again
+
+	Library example compilations:
+		Compiling as one project
+			2 .obj  vstupia do linkera a ten ich spoji do final executable code
+		
+		Compiling separately	, linking as static library	
+			kazdy .obj vstupi do vlastneho linkera a nasledne spoji .lib z linkovanej kniznice
+			s zlinkovanym zdrojakom programu do executable
+		
+		Compiling separately, linking as dynamic library
+			
+	Memory organization
+		memory organization during procedural program execution
+			CODE
+				code itself has to be loaded in memory
+			STATIC DATA
+				data initialized when the application starts (global variables)
+			STACK
+				everything else that is required by function calls....
+				local variables
+				grows in one way
+			HEAP
+				for dynamic objects 
+				array....
+				grows in opposite way to stack
+	
+	
+	RUN-TIME
+		co robi compiler za mna
+		Static language support
+			compiler
+			Library interface(headers in files)
+		Dynamic language support
+			Run-time program enviroment
+			Storage organization
+			Memory content before execution
+			Constructors and destructors of global objects
+		libraries
+		calling conventions
+			
+	FUNCTION CALL
+		Activation record (stack frame)
+			return value
+				may be larger(structure)
+			Saved machine status
+				the return address of the code
+				some registers
+			Control link
+				pointer to the activation record of the caller
+		Calling Convention
+			public name mangling
+		Call/return sequence for functions and procedures
+			housekeeping responsibility
+		Parameter passing
+			registers,stack
+			order of passed parameters
+		Return Value
+			registers,stack
+		Registers role
+			parameter passing, scratch, preserved
+	
+	PUBLIC NAME MANGLING
+		transofrmation of name to string that is used by linker
+		napr pridanie pred funkciu podjebnik _
+	
+	PARAMETER PASSING
+		Call by value
+			actual parameter is evaluated and the value is passed
+			input parameters, the parameter is like a local variable
+			C
+		Call by reference
+			the caller passes a pointer to the variable
+			input/output parameters
+			& in C++ (hidden pointer)
+
+	VARIABLES
+		Named memory holding a value	
+			Has a type 
+			storage
+				static data 
+					global viariables in C
+			Stack
+				local variables in C
+			Heap
+				dynamic memory in c/c#
+		Dictionary(python, php, javascript)
+			not precisely a storage, it is a dynamic structure 
+			(variable -> some value)
+		
+	HEAP
+		storage for dynamic memory
+		Allocate
+			use all features from dynamic memory allocation
+				free blocks evidence
+				allocation algorithms
+		Deallocate
+			explicit action in some languages
+				c c#
+			Automatic deallocation by garbage collection
+				remove burden and errors
+				works only with good knowledge of live objects refs.
+
+	GARBAGE COLLECTION
+		automatic removal of unused memory blocks
+		advantages
+			no dangling pointers,no double free, no memory leaks...
+		disantvantages
+			performance impact, even execution stall, enpredictable
+			behaviour
+		
+		GC strategies
+			TRACING
+				reachable objects from live objects	
+			REFERENCE COUNTING
+				problems with cycles, space and speed overhead
+			ADVANCED VERSIONs for languages with heavy use
+	
+	PORTABILITY
+		Source code portability
+			CPU architecture
+				Different type sizes
+					C, C++
+				Fixed type sizes
+					C#, Java
+			COMPILER
+				Different language "flavours"
+					C++ -gcc,msvc,clang
+				use only syntax and library from a language standard
+			OS
+				different system/library calls
+					linux,widnows
+				Sometimes easy
+					BSD sockets
+	PORTABILITY BY VM
+		"Binary" portability
+			old technique for ensuring portability of a code among different HW
+			Used by many "modern" languages
+				java, C#
+			
+			Compiler translates a source code to the intermediate language
+				abstract instructions
+				java: bytecode,C#: CLR	
+			Native VM compiled for a given architecture
+				java: JRE, C#: CLR
+			VM interprets intermediate language in a sandbox
+		
+	SOLVING SPEED PROBLEMS
+		JIT
+			just in time
+			translate intermediate code to the native code on demand
+		AOT
+			Ahead of time
+			Translate the whole program in intermediate code to the 			native code during the installation
+
+==============================================================================================
+OPERATING SYSTEMS
+	-Abstract machine
+		presented by kernel API
+			system calls
+			wrapped in C libraries
+		Hides HW complexity/diversity
+	
+	Resource manager
+		all HW managed by OS
+		Sharing HW among applications
+			Allocation(memory)
+			Time-sharing(CPU)
+			Abstraction(disk, network)
+
+	CPU MODES
+		USER MODE
+			Available to all application
+			Limited napr readonly or no access to some resources
+					the system registers, instructions
+		KERNEL(system) MODE
+			More privileged(all registers and instructions available)
+			Used by OS or by only part of OS
+			Full access to all resources
+			
+			Example:
+				print string to std. output
+						
+		THE TRANSITION BETWEEN MODES(especially user --> kernel)
+			syscall (user instruction) jumps to the explicit kernel entry point
+			entry point for kernel mode.
+
+	ARCHITECTURE-MONOLITHIC
+		monolithic systems
+			big mess - njo structure
+			early days
+				linux
+			Collection of procedures
+				Each one can call another one
+			No information hiding
+				Potentionally error prone
+			Efficient use of resources, efficient code
+			Originaly no extensibility
+				
+	ARCHITECTURE-LAYERED
+		Organized into hierarchy of layers
+		Layer n+1 uses exclusively services supported  by layer n
+		easier to extend evolve
+
+	ARCHITECTURE-MICROKERNEL
+		minimalizuje kod v kerneli
+		Move as much as possible from the kernel space to the user space
+		Comunication between user modules	
+			messagge passing
+		Extendable secure reliable
+		May be quite slow
+		
+		
+
+	DEVICES
+		Terminology
+			Device - a thing made for particular purpose
+			Device Controller
+				Handles connected devices electrically 
+				Devices connected in a topology
+			Device driver
+				SW componoent(piece of code), part of OS
+				Abstract interface to the upper layer in OS
+				Specific for a controller or a class/group of controllers
+			BIOS/UEFI	
+				Basic HW interfaces that allow to enumerate and initialize devices on boot
+				Comletely general
+				allows us to operate some storage devices
+		
+		TOPOLOGY
+			Bus
+			Ring
+			Star
+			Tree
+
+		DEVICE COMMUNICATION
+			how CPU perfroms I/O operations
+				specialized instructions
+					in al, dx
+					out al, dx
+				Memory-mapped devices
+					device-operating structures are mapped at fixed addresses(at boot)
+
+		DEVICE HANDLING
+			1.Application issues an I/O request
+			2.Language library makes a system call
+			3.Kernel decides, which device is involved
+			4.Kernel starts an I/O operation using device driver
+			5.Device driver intiates an I/O operation on a device controller
+			6.Device does something
+			7.Device driver checks for a status of the device controller
+			8. when data are ready,transfer data from device to the memory
+			9.Return to any kernel layer and make other I/O operation fulfulling the user request
+			10.Return to the application
+
+		DEVICE INTERCOMMUNICATION
+			medzi device driver a device controller trocha zlozite
+			najma od device controller ku device driver
+			ako da device vediet ze skoncil?
+
+			POLLING
+				CPU actively checks device status change
+				
+			INTERRUPT
+				Device notigies CPU that it needs attention
+				CPU interrupts current execution flow
+				IRQ handling
+				CPU has at least one pin for requesting interrupt
+			DMA(Direct Memory Access)
+				Transfer datat to/from a device without CPU attention
+				DMA controller
+				Scatter/gather
+
+		INTERRUPT TYPES
+			External
+				triggered by electric impulse via wire
+				HW wource using IRQ pin
+				Masking(temporary disabling interrupts)
+			Hardware Exception
+				Unexpectedly triggered by an instruction
+				Trap (trigger exception after) or fault (instruction rollbacks, trigger before)
+				Predefined set by CPU architecture
+			Software
+				Special instruction(e.g. x86 has int)
+				Can be used for the system call mechanism
+		
+		INTERRUPT REQUEST HANDLING
+			What happends, when interrupt occurs?
+				CPU decides the source of the interrupt
+					predefined or IRQ controller
+				CPU gets the address of the interrupt handler
+					fixed(defined by ISA)
+				The current stream of instructions is interrupted
+					CPU begins execution of interrupt handler's instructions
+
+				!!!!!!!!The interrupt handler saves the (rest of the) CPU state!!!!!!!!!!
+				The interrupt handler does something useful(its job)
+				The interrupt handler restores the CPU state
+				CPU continues with the original instruction stream
+
+	
+		
+	
+	PROCESSING
+		Program
+			A !passive! set of instructions and data
+			Created by a compiler/linker
+
+		Process
+			Shell responsible for covering all that program needs for running
+			An instance of a program created by OS
+			Program code and data	
+				Process address space
+			The program is "enlivened" by an activatity
+				Instructions are executed by CPU
+			Owns other resources
+			does not execute code on itself
+		Thread
+			Position in code
+			Represent state of CPU
+			Place in a code that is currently running
+			When process is created it always launch one thread
+			One activity in a process
+			Stream of instructions executed by CPU
+			Unit of kernel scheduling
+				I.e, Holds CPU context
+		Fiber
+			"lightweight thread"
+			Lighter unit of scheduling
+			Cooperative scheduling
+				running fiber explicitly yields
+		
+		
+		PARENT-CHILD PROCESS RELATION
+			Linux
+				A child holds its parent IDs(ppid)
+				A child notifies the parent by SIGCHILD signal when terminated
+				
+				A child becomes a zombie until asked for a exit code
+				Killing a process does not kill its children
+
+			Windows
+				does not record ppid but its available in NTQuerySystemInformation
+				Sligthly more complicated	
+					No special relationship between parent-child
+				Process manager can kill the whole sub-tree(but its not a part of OS)
+
+
+!!		SCHEDULER !!!
+			Part of OS
+			Uses scheduling algoritms to assign computing resources to scheduling units
+			
+			MULTITASKING
+				concurrent executions of multiple processes
+			MULTIPROCESSING
+				Multiple CPU's (cores) in one system
+				More challenging for the scheduler
+				Affinity
+			
+
+			CONTEXT
+				CPU (and possibly other) state of scheduling unit
+					registers
+					additional units
+					Virtual memory and address-space related context
+						page tables, TLB
+						Memory caches are transparent (not a part ofthe context, but may affect performance)
+			CONTEXT SWITCH
+				Process of storing the context of scheduling unit (on suspend)
+				Quite costly
+
+
+			REAL-TIME SCHEDULING
+				RT process has a start time (release time) and a stop time (deadline)
+					zvacsa proces dostane deadline kedy ma skoncit
+				Release time - time at which the process must start after some event occured
+				Deadline - time by which the task  must complete
+					HARD - no value  to continue after the deadline
+					SOFT - the value of late result deminished  with time after the deadline
+
+
+				
+		
+		UNIT OF SCHEDULING STATE	(of Thread)
+			Created
+				awaits admission	
+			Terminated(zombie)
+				until parent process waits for the result
+			Ready
+				wait for scheduling
+			Running
+				CPU asigned
+			Blocked
+				waits for resources
+
+
+		MULTITASKING
+			-Cooperative
+				Unit of scheduling must explicitly  and voluntarily yield control
+				All processing must cooperate
+				Scheduling in OS reduced on starting the process and making the context switch after the yield
+					OS does not indicate context switch
+			-Preemptive
+				Each running unit of scheduling has assigned TIME SLICE somewhere between miliseconds and half a second
+				OS needs  some external source of interrupt (HW timer)
+				
+				If the  unit of scheduling consumes whole time-slice 	
+					interrupted by the external source
+					cahnged to READY state
+					OS will make a context switch
+		
+		OBJECTIVES of scheduling
+				maximize/optimize CPU utilization (based on workload)
+				Fair allocation of the CPU
+				Maximize throughput
+					number of processes that complete their execution per unit time
+				Minimize turnaround time
+					Time taken by process to finish
+					necheme predlzovat beh procesu
+				Minimize waiting time
+					Time a process waits in READY state
+				Minimize response time
+
+		PRIORITY of scheduling
+			Priority
+				A number expresing the importance of process
+				Unit of scheduling with greater priority should be scheduled before(or more often than) unit of scheduling with lower priority
+				The priority of the process is the sum of a static priority and dynamic priority
+					Static priority
+						Assigned at a start  of the process
+							Users hierarchy importance
+					Dynamic priority
+						casom proste rastie priorita
+						Adding fairness to the scheduling
+						Once in a time, the dynamic priority is increased for all READY units of scheduling
+						The dynamic  priority is initialized to a 0 and is reset to 0 after the unit of scheduling is scheduled for execution
+
+		SCHEDULING ALGORITMS:
+			NON-PREEMPTIVE
+				First Come, First Serve (FCFS)
+					Single FIFO queue
+					A process enters the queue on the tail, the head process is running on the CPU
+					ptm vymazane z qeue
+
+				Shortest job first 
+					Maximize throughput
+					Expected job execution time must be known in advance
+				
+				Longet job First
+		
+			PREEMPTIVE
+				Round Robin:
+					Like FCFS (but preemptive)
+					single queue
+					Each unit of scheduling has an assigned time slice
+					If the unit of scheduling consumes the whole time slice or is blocked, it will be assigned to the tail of the queue
+
+				Multilevel Scheduling:
+					Multiple queues
+						time-slice defined by queue
+					If unit of scheduling consumes the whole time-slice, it will be assigned to the LOWER queue
+					If the unit of scheduling blocks before consuming the whole time-slice, it will be assigned to the HIGHER queue
+					Schedule head unit of scheduling from the highest non-empty queue
+						
+					Top level queue ma maly time-slice a naopak bottom-level ma velky
+
+					CPU prechadza top to bottom a najde prvy neprazdny queue a vyberie z neho unit of scheduling
+		
+				Completely fair scheduler (CFS)
+					default scheduler for linux
+					implemented in linux kernel
+					Processes are in red-black tree
+						indexed by execution time (usporiadane)
+					Maximum execution time
+						Time-slice calculated for each process (e.g by priority)	
+						The time waiting to run divided by the total number of processes
+					Scheduling algoritm:
+							The leftmost node is selected (lowest execution time)
+							If the process completes its execution, it is removed from 	scheduling
+							If the process reaches its maximum execution time or is somehow stopped or interrupted, it is reinserted into a 								tree based on its new execution time
+			
+			
+	INTER-PROCESS COMMUNICATION
+		Cooperating processes
+			OS isolates resources of each process (memory, device handlers,...)
+			IPC presents a secure way of data exchange
+		Typical IPC methods supported by most systems
+			Pipes
+				or other types of socket(e.g TCP loopback)
+			Shared memory
+				or shared external memory(files)
+			Signals
+				also used for kernel -> process communication
+
+==============================================================================================
+FILE
+	data organization unit
+	collection of related information
+		abstract stream of data (bytes)
+			kernel does not understand file formats
+		typically stored on secondary storage, but there are other possibilities
+	File identification
+		system uses numeric identifiers
+		File name and path - a named reference to the file identifier in organized tree structure
+			so that humnans can find the names	
+			some parts of file may have special meaning (leading dot, extension)
+
+	
+	FILE OPERATIONS
+		Additional operations
+			Create, truncate, delete, flush(push everything to hdd without close), change attributes
+		File handle
+			Process-specific sequentially assigned, kernel holds translation table
+		Buffering
+			to icnrease performance, multiple levels (system,language runtime)
+			sequential vs random access
+		Alternatives
+			memory mapping (will become more clear after memory managment)
+			async file I/O
+
+	FILE ATTRIBUTES
+		Size:		Blocks:			
+		Device:		Inode:		Links:
+		Access:		Uid:		Gid:
+		Modify:
+		Change:
+		Birth:
+	
+	FILE DIRECTORY
+		collection(list) of file entries
+			efficiency- a file can be located more quickly
+			naming - better navigation for user
+			grouping -logical grouping of files
+		Usually represented as a special type file
+		store(some of)  the file attributes
+		hierarchy or structure
+			root
+		Operations
+			create/delete/rename file/subdirectory
+			search for a name
+			list members
+	FILE STORAGE
+		traditional storage
+			file system in secondary or external storage
+			file system in RAM
+		Network storage
+			protocols for performing FS operations remotely over network
+		Virtual(system) files
+			using file abstraction to provide additional (system) features
+				/dev/null
+				/dev/urandom
+				/proc/cpuinfo
+
+	FILE LINKS
+		Links(hard links)
+			multiple directory entries refer to the same physical file (same file ID)
+			most operations are transparent (no special handling required)
+			saves space (in some situations), creates additional problems
+				file deletion should not always remove the file data
+		Symlinks(soft links)
+			Special files, text content holds path to another file
+				does not refer to the IDs
+			Requires special handling in path processing ("follow symlinks")
+				often hidden in basic system tools or programming runtime libraries
+
+
+	
+	FILE SYSTEM
+		how and where are data stored
+			formats,protocols
+		Implementation of abstraction for file and directories
+		Responsibility
+			Name translation
+			Data blocks managment
+				allocated vs unallocated(free blocks)
+			bitmap,linked list,B-tree
+
+			file data managment
+				sequence of data blocks
+		Local file system
+			stored on HDD,SSD,removable media
+			FAT,NTFS,Ext234,XFS
+		Network file system
+			protocol for adressing files and directories over the network
+			NFS,CIFS/SMB,...
+		
+
+		FAT 
+			LINKED LIST STRUCTURE
+			File Allocation Table
+			one structure (FAT) for managing free blocks and file data location
+			Directory	
+				sequence of entries with fixed size and attributes
+					starting cluster, name + ext, size, timestamps, attributes
+				Root in fixed position
+		
+			Princip:
+				na zaciatku Boot record s metadatami o velkosti clusterov atd...	
+				ptm 2 kopie FAT1 a FAT2 tabulky 
+				Root directory = file0, vzdy sa nachadza a moze byt pouzity pre pristup ku hocjakemu 
+				inemu file. Nazov suboru a prvy blok(first cluster). 
+				DATA, 
+
+
+				-1 = last block of the file
+				SEEK:
+					
+		EXT2
+			TREE SHAPED structure!
+			Second extended file system (ext2)
+			simple, old, linux
+				Ext3 - added to journal to improve persistance
+				Ext4 - improvement of ext3, larger individual files(16T) and FS(1T)
+			Inode (index node)
+				represent one file/directory, naozaj file nie entries
+				Tree-like hierarchy with block references (faster than linked list)
+					smaller files are represented more efficiently
+				Holds most of the attributes
+			Directory
+				Sequence of entries with fixed size  structure
+					inode number, file name
+
+			Disk is devided into some blocks and these blocks are grouped into BLOCK GROUP
+				each block group contains
+					superblock
+					descriptor
+						how many blocks are there and how large they are
+					data bitmap
+					inode bitmap
+					inode table
+						list of inode with data blocks which can be free or allocated
+					data block
+		
+			File tends to be hold in one block group if possible
+			small files within 12 data blocks can be accessed directly
+				just read the inode structure(no linked list)
+			12th block = INDIRECT BLOCK = data block with 128 references (one lvl of indirection)
+			12th block = DOUBLE INDIRECTION = v nom block indirect blockom v ktorom su dalsie 					indirect blocky
+
+		HARD DISC MECHANICS
+			Terminology
+				block = the same sector	on all platters
+				Cluster = the same track on all platters
+				Flying height = distance between head and platter (-5nm)
+				Rotational speed = 5400,7200,10k,15k rpm
+
+		DISK SCHEDULING ALGORITHMS
+			scheduling of I/O request for the disk
+			originally done by OS, now by disk itself
+		
+			Disk access time = Seek Time + Rotational Latency + Transfer Time	
+				Seek Time = time to locate arm	to track (~ms)
+				Rotational latency = time to rotate a sector to the fixed position of heads
+				Transfer time = time to transfer data
+			Minimize disk access time for multiple I/O requests
+			
+			Examples
+				All algorithms demonstrated with the same	pattern of I/O request and initial position
+					I/O requests - 82,170,43,61,24....
+					Initial position - 50
+		
+			First Come First Serve (FCFS)
+				Pros
+					fair chance for all requests
+					simple good for light load
+				Cons 
+					No optimization = usually not the best
+		
+			Short Seek Time First (SSTF)
+				Pros
+					average access time decreases
+					Increased throughput
+				Cons
+					Possible starvation for distant request, when a new short seek request arrive
+				
+			SCAN (Elevator algoritm)
+				Keeps direction (as long as request exists)
+				Pros 
+					high troughput = good for heavy loads
+					low variance in access time
+				Cons
+					Long waiting time for new request just visited by the arm	
+
+			CSCAN
+				circular SCAN
+				Pros	
+					More uniform time compared to SCAN
+				vrati sa naspat bez zastavky
+
+			LOOK/CLOOK
+					like SCAN/SCAN but does not visit ends of the disk	
+			
+			FSCAN
+				Two queues
+				Compute algoritm only for 1st queue, new requests are inserted to the 2nd one
+
+
+	SSD (SOLID STATE DRIVE)
+		disk without moving parts	(only electric circuits)
+		NAND flash, made of floating gate transistors
+			similar to RAM, but slower and the transistors retain the charge	without refreshing
+			Reads/writes damage the transistors over the time
+		Grid structure organized as BLOCK of PAGES
+			!!!Page is ~2-16KiB long, block has ~128-256 pages (megabytes) !!!
+				1-4 bits per cell (SLC(single bit per cell), MLC, TLC QLC), more bits = cheaper, but less efficient
+			Read/write per page, erase per block (!)
+			must erase whole block if i want to update!!!
+		Complex controller that handles the I/O operations
+			and data caching in the internal RAM
+		
+		SSD DATA UPDATES	
+			Writing new data is OK
+			Page update cannot erase only one page
+				erase is performed on blocks
+			Update invalidates old page and writes a new one
+			Garbage collection performs data consolidation
+				copy only valid pages of a block
+				erase entire block
+	
+		SSD ISSUES
+			Write amplification problem	
+				a page is re-written many time due to garbage collection
+				each write/erase create cumulative damage to NAND flash
+			HW solutions
+				Wear leveling - elaborate algorithm that remaps the blocks
+				over-provisioning - The SSD is larger than it declares
+			OPERATING SYSTEM solutions
+				Special file system designed for SSD's
+					flash friendly FS(F2FS), BtrFS, log-structure file system	
+				TRIM operation - special command how OS can render blocks invalid (state is deleted)
+			
+
+		FILE SYSTEMS ON HHD's
+			HDD PARTITIONING
+				Division of physical drive into multiple logical drives (MBR, GPT)
+					each may have its own file system
+				mounted to paths in the root tree(Linux), or represented separately (windows)
+			RAID(Redundant Array of Inexpensive Disk)
+				A way to interconnect multiple HDD's into one
+					typically at the hardware level, but OS can also implement it as well
+				The main objective is to increase reliability (and possibly R/W speed)
+					RAID 0 - two disks, per sector interleveling (better speed, worst reliability)
+					RAID 1 - two disks completely mirrored
+					RAID 5	- each data block is divided among N disks + 1 checksum is created
+	
+		VIRTUAL MEMORY
+			Basic concepts
+				All memory  acceses from the instruction work with virtual adresses
+					virtual address space
+					even instruction fetch
+				Operating memory provides physical memory
+					physical address space
+					alway 1-dimensional
+					the memory controller uses physical adresses
+				Translation mechanism 
+					Implemented in HW (MMU embedded in CPU)
+					Translates a virtual address to a physical address
+					The translation (mapping) may not exist -> exception (fault)
+					Two basic mechanisms - segmentation, paging
+
+			VAS = process address space
+			PAS = available memory
+		
+			why?
+				More address space
+					VAS can be larger than PAS (illusion of having a large memory)
+					Add a secondary storage as memory backup/swap
+					This is no longer the primary reason today
+	
+				Security
+					Process address space separation
+					"Separation" of logical segments in a process address space	 (read-only,executable..)
+				Specialized (advanced) operations
+					memory mapped I/O	(e.g memory mapped file)
+					Controlled memory sharing
+			
+			SEGMENTATION
+				used in past, not so current
+				Concepts
+					Virtual (process) address space divided into logical segments
+						segments are numbered
+						may have different sizes
+					Virtual address has two parts
+						[segment number; segment offset]
+						offsets 0-based for each segment
+					Segment table (translation data structure)
+						In memory, for each process
+						Stores base physical address, length and attributes for each segment
+						Indexed by the segment number
+						Segment fault(if translation or validation of access fails)
+			
+			PAGING
+				used nowadays
+				Concepts
+					VAS divided into EQUAL parts
+						!!!PAGE, 2^n size!!! 	VERY IMPORTANT
+						typicly size 4kB to je 2^12 
+					PAS divided into EQUAL parts
+						!!!FRAME, equal size with page (i.e, one page fits exactly one frame)!!!
+					VA 1-dimensional
+					Page table (translation data structure)
+						In memory, for each process
+						indexed by a page number! 
+						each entry contains a frame number and attributes (P)
+						Page fault = exception of CPU, page neexistuje = NA
+							reasons:
+								program is wrong = signal 11
+								dereferencing zeroptr
+								already provided memory in physical sense
+				princip
+					vyuzijeme fakt ze vsetky pages maju velkost 2^n
+					ak napr n = 12
+					mozeme zobrat lower 12 bits z adressy ako offset
+					a zostavajucich 20 bitov ako page number
+					potom pozriem do page table for translation
+					dostanem fyzicku adresu page z table
+					and i append the offset to physical address of page
+					 
+				PAGE TABLE PROBLEMS
+					Size
+						1-level page table, 32-bit VA/PA
+						4K pages/frames(12 bits)
+							size of the page table entry?
+							size of the page table?
+						Do we really need the whole VA?
+						MULTILEVEL PAGE TABLES
+							1st level always in memory
+							Individual tables on other levels may be missing (i.e, we are saving space)
+					Speed
+						each memory access from an instruction means at least one other memory access to the 						page table
+							
+						TLB (Translation Lookaside Buffer)
+							Associative memory
+							Cache for translating page number to a frame number
+							0-level page tables (MIPS)
+
+
+				ADDRESS TRANSLATION
+					Steps for address translation
+						Take page number from VA and keep offset (separately)
+						Check TLB for mapping
+							if exists, retrieve frame number otherwise coninue
+						Go through the page table
+							Divide page number into multiple PT indices
+							index 1st level PT
+								If there is no mapping for 2nd level PT, raise page fault exception
+								Retrieve PA for 2nd level PT and continue
+							Go through all levels of PTs
+								if there is no mapping in any PT level, raise page fault exception
+								if all PT levels are mapped, retrieve frame number
+							Save retrieved mapping to TLB
+
+						Update A(ccessed)=set when read and D(irty)=set when written bits in page table/TLB
+						Assemble PA by "gluing" the retrieved frame number and the original offset from VA	
+				
+				
+				PAGE FAULT EXCEPTION HANDLING
+					An instruction raises the page fault exception
+					OS interrupt handler
+					Determine the cause of the fault
+						Unathorized access
+							out of allocated virtual space, store to R/O page, access to kernel memory
+						Valid adress but not mapped	
+					Create mapping
+						find a free frame
+							either there is one unoccupied
+							or find a victim (for swapping)
+								page replacement algorithms
+								save dirty victim frame
+								remove mapping from TLB
+						load content to the free frame
+						construct/fill corresponding page tables
+					Return back from handler and retry the instruction
+		
+				
+				PAGE REPLACEMENT ALGORITHMS
+					Any situation, when you need to find a victim from a limited space
+					Frames, TLB, cache
+
+					Optimal page algorithm
+						Replace the page that will not be used for the longest period of time
+						lowest page-fault rate
+						Theoretical, we do not have an oracle for foretelling the future 
+
+					CLOCK algorithm
+						Frames organized in a circular manner
+						Clock hand points to the next frame to replace
+						Each page has A(cessed) bit
+							A is the accessed flag which is set to 1 whenever the page is touched by HW
+						If the frame has A != 0, set A = 0 and advance the hand
+						If the frame has A == 0, select this frame
+
+					NRU (Not Recently Used)
+						Each page has A(ccessed) and D(irty) bits
+						Clears A bits periodically (e.g, once a minute)
+							Bit D is not touched 
+						Uses A and D bits to classify frames into four classes
+						Selects a random frame from the lowest non-empty class
+
+					LRU (Least Recently Used)
+						Uses the recent past as a predicition of the near future
+						Replaces the page that has not been referenced for the longest time
+						Existing HW IMPLEMENTATIONS
+							Cache
+							Bit matrix
+						SW implementation
+							Move-to-front algorithm
+								can be implemented by linked list or heap data structure
+							Too complicated and space consuming
+							Approximation algorithms exists
+					
+					NFU (Not Frequently Use)
+						Rough approximation of LRU
+						Each frame has a counter (typically small, several bits)
+						Periodically scan page table and increase the counter for a frames with A==1
+							always clear A
+						Select the frame with lowest counter
+						Problems
+							newly occupied frames may be swapped before the get used
+							Frames that were previously jeavy used will never be selected
+						Aging
+							periodically divide counters by 2 (i.e , shift by 1)
+					
+					ADVANCED PAGING
+						Shared memory
+							part of a virtual memory space shared amongst processes
+								the block is probably placed on different starting virtual address
+						Memory-mapped files
+								File as a backing store for paging
+								Direct access to the file content using CPU instructions
+								Problems with file size and with appending data
+
+
+
+		VIRTUAL MACHINE AND CONTAINERS
+			VM = Emulation of a computer system
+				full virtualization
+					substitute for a real machine, allows execution of entire OS
+					Hypervisor shares real HW, native execution, virtual HW
+					Isolation, encapsulation, compability
+				Process VM
+					Runs as an application inside OS
+					Provides platform-independent programming environment
+						Abstract machine
+						java VM, .NET CLR
+					Slow execution
+						JIT, AOT
+			Container = OS-level virtualization
+				OS kernel allows existence of multiple isolated user space instances
+
+==============================================================================================
+PARALLEL PROGRAMMING AND SYNCHRONIZATION
+	Parallel computing
+		calculations or executions of processes are carried out simltaneously
+		bit-level, instruction-level, data, and task parallelism	
+		parallelism without concurrency - bit-lebel parallelism
+		problem broken into several similar subtasks, result combined
+	Concurrent computing
+		Computations are executed simultaneously
+		Concurrent without parallellism - multitasking on a single CPU
+		Processes do not work on related tasks
+	Forces
+		One (shared) address space
+		Threads
+		Multiprocessing
+		Scheduling
+	
+	
+	RACE CONDITION
+		Race condition
+			multiple threads accessing (updating) the same data in shared memory space
+		Result of a computation depends on the sequence or timing of units of scheduling
+
+
+	SYNCHRONIZATION 
+		Process synchronization
+			multiple units of scheduling do some form of a handshake at a certain point to make an 						agreement to a certain sequence of action
+		Data synchronization
+			keeping multiple copies of data in coherence with each other
+			maintain data integrity
+			usually implemented by process synchronization
+		Problems with synchronization
+			deadlock, starvation, overhead
+
+		SYNCHRONIZATION PRIMITIVES
+			IMPLEMENT PROCESS SYNCHRONIZATION (IN OS)
+			Active
+				Instructions are executed during waiting for an access
+					busy waiting (testing a condition in a loop)
+			Passive/blocking
+				the unit of scheduling is blocked until access is allowed
+			Hardware support
+				Atomic instructions
+					Test-and-set (TSL) compare-and-swap (CAS)
+					Instruction semantics
+
+			SPIN-LOCK
+				busy waiting using TSL/CAS
+				short latency, right for short waiting times
+				testujem nejaku variable a akonahle je aka chcem vykonam potrebne
+				+very fast, without OS help
+			SEMAPHORE
+				oldest one (profound one)
+				Protected COUNTER and queue of waiting for US(unit of scheduling)
+				Atomic operations UP and DOWN
+			MUTEX
+				implements mutual exclusion (semaphore with counter = 1)
+				Atomic operations LOCK and UNLOCK (correspondding to DOWN and UP)
+			BARRIER 
+				multiple units of scheduling meet at the same time on the same barrier
+			Specific programming language constructs
+				monitor
+					methods in an object executed with mutual exclusion
+					possibility to wait on a certain condition
+				Java/C#
+					keyword synchronized/loc
+					
+
+			DEADLOCK
+				a state of a group of units of scheduling and resources, where every member of the group 					waits for an action, which can be performed by other member in the group
+			Necessary conditions for deadlock(Coffman)
+				mututal exclusion
+					at least one resource in exclusive mode
+				Hold and wait 
+					US holding a resource requests for another one
+				No preemption
+					Resources cannot be reclaimed without harm
+				Circular wait
+					there is a circle in a deadlock modelling graph
+		
