@@ -1468,7 +1468,7 @@ PARALLEL PROGRAMMING AND SYNCHRONIZATION
 				the unit of scheduling is blocked until access is allowed
 			Hardware support
 				Atomic instructions
-					Test-and-set (TSL) compare-and-swap (CAS)
+					Test-and-set (TSL)  = compare-and-swap (CAS)
 					Instruction semantics
 
 			SPIN-LOCK
