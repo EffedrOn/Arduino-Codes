@@ -119,6 +119,7 @@ CPU
 			
 	CPU architektura:
 		-Instruction set (ISA)
+			specification, design which instructions,registers,memory is used
 		-Hardware architecture	
 
 	Co je CPU?
@@ -432,11 +433,13 @@ MEMORY
 
 			ASOCIATIVE MEMORY (important)
 					ulozene kusky pamate RAM do cache
+						
+					uses KEYS and VALUES	
+						requesting values by their keys(normally number)
+						takze vpodstate si zapamatam cast regular memory (RAM) tak ze ulozim si adresu ako							key, spolocne s jej value.
 	
-					uses KEYS and VALUES
-					requesting values by their keys
-					
-					very fast
+					very fast = near constant time complexity
+			
 					content based addressing
 					used in CPU caches
 		
@@ -739,7 +742,7 @@ OPERATING SYSTEMS
 				CPU actively checks device status change
 				
 			INTERRUPT
-				Device notigies CPU that it needs attention
+				Device notifies CPU that it needs attention
 				CPU interrupts current execution flow
 				IRQ handling
 				CPU has at least one pin for requesting interrupt
@@ -762,7 +765,7 @@ OPERATING SYSTEMS
 				Can be used for the system call mechanism
 		
 		INTERRUPT REQUEST HANDLING
-			What happends, when interrupt occurs?
+			What happens, when interrupt occurs?
 				CPU decides the source of the interrupt
 					predefined or IRQ controller
 				CPU gets the address of the interrupt handler
@@ -1411,7 +1414,7 @@ FILE
 
 		VIRTUAL MACHINE AND CONTAINERS
 			VM = Emulation of a computer system
-				full virtualization
+				Full virtualization
 					substitute for a real machine, allows execution of entire OS
 					Hypervisor shares real HW, native execution, virtual HW
 					Isolation, encapsulation, compability
@@ -1432,22 +1435,32 @@ PARALLEL PROGRAMMING AND SYNCHRONIZATION
 		bit-level, instruction-level, data, and task parallelism	
 		parallelism without concurrency - bit-lebel parallelism
 		problem broken into several similar subtasks, result combined
-	Concurrent computing
+	CONCURRENT computing
+		Cooperate directly
 		Computations are executed simultaneously
 		Concurrent without parallellism - multitasking on a single CPU
 		Processes do not work on related tasks
 	Forces
-		One (shared) address space
+		ONE (SHARED) ADDRESS SPACE!!!
 		Threads
 		Multiprocessing
 		Scheduling
 	
 	
 	RACE CONDITION
-		Race condition
-			multiple threads accessing (updating) the same data in shared memory space
+		Multiple threads accessing (updating) the same data in shared memory space
 		Result of a computation depends on the sequence or timing of units of scheduling
 
+	CRITICAL SECTION
+		Problem definition
+			Concurrent access to a shared resource can lead to the race condition or even to an undefined 				behaviour
+		Solution 
+			parts of the program, where the shared resource is accessed, needs to be protected to avoid 				concurrent access
+		Critical sectian
+			protected section of program
+		Mutual exclusion
+				a critical section can be executed simultaneously by at most one unit of scheduling
+		
 
 	SYNCHRONIZATION 
 		Process synchronization
@@ -1461,16 +1474,18 @@ PARALLEL PROGRAMMING AND SYNCHRONIZATION
 
 		SYNCHRONIZATION PRIMITIVES
 			IMPLEMENT PROCESS SYNCHRONIZATION (IN OS)
-			Active
+			ACTIVE
 				Instructions are executed during waiting for an access
 					busy waiting (testing a condition in a loop)
-			Passive/blocking
+			PASSIVE/blocking
 				the unit of scheduling is blocked until access is allowed
 			Hardware support
-				Atomic instructions
+				ATOMIC INSTRUCTIONS
 					Test-and-set (TSL)  = compare-and-swap (CAS)
+						testuje ci je splnena podmienka(variable has still excpected value)
+							Ak je prevedie Atomicky update (spolocne s testom updatuje value tej variable)
 					Instruction semantics
-
+		MORE COMPLEX SYNCHRONIZATION PRIMITIVES
 			SPIN-LOCK
 				busy waiting using TSL/CAS
 				short latency, right for short waiting times
@@ -1480,13 +1495,15 @@ PARALLEL PROGRAMMING AND SYNCHRONIZATION
 				oldest one (profound one)
 				Protected COUNTER and queue of waiting for US(unit of scheduling)
 				Atomic operations UP and DOWN
-			MUTEX
+				DOWN(counter--) when entering critical section and set UP when leaving critical section
+			MUTEX 
+				"binary semaphore"
 				implements mutual exclusion (semaphore with counter = 1)
 				Atomic operations LOCK and UNLOCK (correspondding to DOWN and UP)
 			BARRIER 
 				multiple units of scheduling meet at the same time on the same barrier
 			Specific programming language constructs
-				monitor
+				Monitor
 					methods in an object executed with mutual exclusion
 					possibility to wait on a certain condition
 				Java/C#
@@ -1494,14 +1511,30 @@ PARALLEL PROGRAMMING AND SYNCHRONIZATION
 					
 
 			DEADLOCK
-				a state of a group of units of scheduling and resources, where every member of the group 					waits for an action, which can be performed by other member in the group
-			Necessary conditions for deadlock(Coffman)
-				mututal exclusion
-					at least one resource in exclusive mode
-				Hold and wait 
-					US holding a resource requests for another one
-				No preemption
-					Resources cannot be reclaimed without harm
-				Circular wait
-					there is a circle in a deadlock modelling graph
+				A state of a group of units of scheduling and resources, where every member of the group 					waits for an action, which can be performed by other member in the group
+
+				Necessary conditions for deadlock(Coffman)
+					mututal exclusion
+						at least one resource in exclusive mode
+					Hold and wait 
+						US holding a resource requests for another one
+					No preemption
+						Resources cannot be reclaimed without harm
+					Circular wait
+						there is a circle in a deadlock modelling graph
+
+			CLASSIC SYNCHRONIZATION PROBLEMS
+				Set of well-known synchronization problems
+				Demonstrate a problem using an allegory
+				Avoid deadlock, starvation, and other problems
+
+				BOUNDED-BUFFER (producer-consumer)
+				DINING PHILOSOPHERS
+				READERS AND WRITERS
+				SLEEPING BARBER
+
+
+
+	 
+f(d, s) = ( (d-2) div s ) + 2
 		
