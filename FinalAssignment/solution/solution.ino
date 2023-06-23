@@ -42,7 +42,7 @@ void set_OUTPUT_pins() {
 
 class Display{
   private:
-    char text [number_of_muxpos];
+    char *text; //text [number_of_muxpos];
     int displayed_pos;
 
     void displayChar( char ch, byte pos ) {
@@ -67,9 +67,10 @@ class Display{
     }
   public:
     void set( const char* message, int how_many_to_display ) {
-      for( int i = 0; ( i < how_many_to_display ) &&  ( i < number_of_muxpos ); i++ ) {
-        text[i] = message[i];
-      }
+      text = message;
+      //for( int i = 0; ( i < how_many_to_display ) &&  ( i < number_of_muxpos ); i++ ) {
+        //text[i] = message[i];
+      //}
     }
     void print_text(){
       for ( int i = 0; i < number_of_muxpos; i++ ){
@@ -173,15 +174,39 @@ void check_3_button(){
     generator_instance.switch_to_config();
   }
 }
-
-void fill_setter( char first, char second, char third, char *setter ){
-  //char setter[] = first + second + third;
-}
-void clear_setter(char *setter){
-  for(int i = 0; i < number_of_muxpos; i++){
-    setter[i] = ' ';
+int get_number_length(int number){
+  int length = 0;
+  while ( number != 0){
+    number /= 10;
+    length++;
   }
+  return length;
 }
+
+void fill_setter( int what_to_set[3], char *setter ){
+  int setter_index;
+  for(int i = 0; i < 3; i++){
+    if( i != 1 ) { //ak sa nejedna o special sign 
+      int num = what_to_set[i];
+      int index_in_number;
+      int number_length = get_number_length(num);
+      while( index_in_number < number_length){
+        int digit_to_set = what_to_set[i] / ; 
+        setter[setter_index] = ;
+        index_in_number++;
+        setter_index++;
+      }
+    }
+    else{
+      setter[setter_index] = what_to_set[i];
+    }
+    setter_index++;
+
+   
+  }
+  
+}
+
 void setup() {
   pinMode(latch_pin, OUTPUT);
   pinMode(clock_pin, OUTPUT);
@@ -200,8 +225,10 @@ void loop() {
   check_3_button();
   //char setter[number_of_muxpos];
   //fill_setter(generator_instance., second, third);
-  char setter[] ="9d2";
+  char setter[number_of_muxpos];
+  int what_to_set[3] = {generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides() };
+  fill_setter( what_to_set ,setter );
   display_instance.set(setter, number_of_muxpos);
   display_instance.show_text();
-  clear_setter(setter);
+  //clear_setter(setter);
 }
