@@ -104,7 +104,7 @@ class Generator {
     }
     void increase_sides(){
       if ( !normal_mode ){
-        index_poly = index_poly % ( choices_of_sides-1 ) + 1;
+        index_poly = (index_poly + 1) % choices_of_sides;
       }
       Serial.println( sides_of_poly[index_poly] );
     }
@@ -157,7 +157,7 @@ void check_1_button(){
     generator_instance.switch_to_normal();
   }
   if( buttons_array[0].is_held_down() ){
-    ;
+    ;//tu budem generovat hod kockou 
   }
 }
 
@@ -174,39 +174,15 @@ void check_3_button(){
     generator_instance.switch_to_config();
   }
 }
-int get_number_length(int number){
-  int length = 0;
-  while ( number != 0){
-    number /= 10;
-    length++;
+
+String fill_string_setter(int throws_count, char special_sign, int sides_count){
+  String str_sides_count = "00";
+  if(sides_count != 100){
+    str_sides_count = String(sides_count); 
   }
-  return length;
+  String string_setter = String(generator_instance.get_throws()) + generator_instance.get_special_char() + str_sides_count;
+  return string_setter;
 }
-
-void fill_setter( int what_to_set[3], char *setter ){
-  int setter_index;
-  for(int i = 0; i < 3; i++){
-    if( i != 1 ) { //ak sa nejedna o special sign 
-      int num = what_to_set[i];
-      int index_in_number;
-      int number_length = get_number_length(num);
-      while( index_in_number < number_length){
-        int digit_to_set = what_to_set[i] / ; 
-        setter[setter_index] = ;
-        index_in_number++;
-        setter_index++;
-      }
-    }
-    else{
-      setter[setter_index] = what_to_set[i];
-    }
-    setter_index++;
-
-   
-  }
-  
-}
-
 void setup() {
   pinMode(latch_pin, OUTPUT);
   pinMode(clock_pin, OUTPUT);
@@ -223,12 +199,9 @@ void loop() {
   check_1_button();
   check_2_button();
   check_3_button();
-  //char setter[number_of_muxpos];
-  //fill_setter(generator_instance., second, third);
+  String string_setter = fill_string_setter( generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides());
   char setter[number_of_muxpos];
-  int what_to_set[3] = {generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides() };
-  fill_setter( what_to_set ,setter );
+  string_setter.toCharArray(setter, number_of_muxpos+1);
   display_instance.set(setter, number_of_muxpos);
   display_instance.show_text();
-  //clear_setter(setter);
 }
