@@ -91,8 +91,21 @@ class Generator {
     int index_poly;
     int number_of_throws = 1;
     char special_char = 'd';
-    bool normal_mode = true;
+    bool normal_mode = false;
+    int result;
   public:
+    void generate_result(){
+      result = 0;
+      for(int i = 0; i < number_of_throws; i++){
+        result += random(1,sides_of_poly[index_poly]+1);
+      }
+    }
+    bool is_normal_mode(){
+      return normal_mode;
+    }
+    int get_result(){
+      return result;
+    }
     int get_sides(){
       return sides_of_poly[index_poly];
     }
@@ -132,8 +145,10 @@ class Button {
     bool is_held_down(){
       bool current_state = digitalRead( pin );
       if( current_state == false){
-        Serial.println("som dole");
+        return true;
+        //Serial.println("som dole");
       }
+      return false;
     }
     bool was_pressed() {
       bool current_state = digitalRead( pin );
@@ -152,13 +167,16 @@ constexpr int number_of_buttons = sizeof( buttons_array ) / sizeof( buttons_arra
 Display display_instance;
 Generator generator_instance;
 
-void check_1_button(){
+bool check_1_button(){
+  bool animate = false;
   if( buttons_array[0].was_pressed() ){
     generator_instance.switch_to_normal();
   }
   if( buttons_array[0].is_held_down() ){
-    ;//tu budem generovat hod kockou 
+    animate = true;
+    //generator_instance.generate_result();//tu budem generovat hod kockou dokola 
   }
+  return animate;
 }
 
 void check_2_button(){
@@ -196,11 +214,20 @@ void setup() {
 }
 
 void loop() {
-  check_1_button();
+  bool animate = check_1_button();
   check_2_button();
   check_3_button();
-  String string_setter = fill_string_setter( generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides());
   char setter[number_of_muxpos];
+  String string_setter;
+  string_setter = String(generator_instance.get_result());
+  if( !generator_instance.is_normal_mode() ){
+    string_setter = fill_string_setter( generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides());
+  }
+  else if( animate ){
+    generator_instance.generate_result();
+    string_setter = generator_instance.get_result();
+  }
+  Serial.println(animate);
   string_setter.toCharArray(setter, number_of_muxpos+1);
   display_instance.set(setter, number_of_muxpos);
   display_instance.show_text();
