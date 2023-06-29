@@ -42,40 +42,30 @@ void set_OUTPUT_pins() {
 
 class Display{
   private:
-    char *text; //text [number_of_muxpos];
+    char *text; 
     int displayed_pos;
-
     void displayChar( char ch, byte pos ) {
       byte glyph = EMPTY_GLYPH;
-      if (isAlpha(ch)) {
-        glyph = LETTER_GLYPH[ ch - (isUpperCase(ch) ? 'A' : 'a') ];
+      if ( isAlpha( ch ) ) {
+        glyph = LETTER_GLYPH[ ch - ( isUpperCase(ch) ? 'A' : 'a' ) ];
       }
       else {
         int int_digit = ch - '0';
-        if ( (int_digit >= 0 ) && (int_digit <= 9) ){
+        if ( ( int_digit >= 0 ) && ( int_digit <= 9 ) ){
           glyph = digits[int_digit];
         }
       }
-      digitalWrite(latch_pin, LOW);
-      shiftOut(data_pin, clock_pin, MSBFIRST, glyph);
-      shiftOut(data_pin, clock_pin, MSBFIRST, 1 << pos);
-      digitalWrite(latch_pin, HIGH);
+      digitalWrite( latch_pin, LOW );
+      shiftOut( data_pin, clock_pin, MSBFIRST, glyph );
+      shiftOut( data_pin, clock_pin, MSBFIRST, 1 << pos );
+      digitalWrite( latch_pin, HIGH );
     }
-
     void pos_aritmetic() {
       displayed_pos  = ( displayed_pos+number_of_muxpos-1 ) % number_of_muxpos; 
     }
   public:
-    void set( const char* message, int how_many_to_display ) {
+    void set( const char* message ) {
       text = message;
-      //for( int i = 0; ( i < how_many_to_display ) &&  ( i < number_of_muxpos ); i++ ) {
-        //text[i] = message[i];
-      //}
-    }
-    void print_text(){
-      for ( int i = 0; i < number_of_muxpos; i++ ){
-        Serial.println(text[i]);
-      }
     }
     void show_text() {
       displayChar( text[displayed_pos], displayed_pos );
@@ -94,22 +84,22 @@ class Generator {
     bool normal_mode = false;
     int result;
   public:
-    void generate_result(){
+    void generate_result() {
       result = 0;
-      for(int i = 0; i < number_of_throws; i++){
-        result += random(1,sides_of_poly[index_poly]+1);
+      for(int i = 0; i < number_of_throws; i++) {
+        result += random( 1, sides_of_poly[index_poly] + 1 );
       }
     }
-    bool is_normal_mode(){
+    bool is_normal_mode() {
       return normal_mode;
     }
-    int get_result(){
+    int get_result() {
       return result;
     }
     int get_sides(){
       return sides_of_poly[index_poly];
     }
-    char get_special_char(){
+    char get_special_char() {
       return special_char;
     }
     int get_throws(){
@@ -117,15 +107,14 @@ class Generator {
     }
     void increase_sides(){
       if ( !normal_mode ){
-        index_poly = (index_poly + 1) % choices_of_sides;
+        index_poly = ( index_poly + 1 ) % choices_of_sides;
       }
       Serial.println( sides_of_poly[index_poly] );
     }
     void increase_throws(){
       if ( !normal_mode ){
-        number_of_throws = (number_of_throws % ( throws_modulo - 1 ) ) + 1;
+        number_of_throws = ( number_of_throws % ( throws_modulo - 1 ) ) + 1;
       }
-      Serial.println( number_of_throws );
     }
     void switch_to_normal(){
       normal_mode = true;
@@ -142,11 +131,10 @@ class Button {
     bool previous_state;
   public:
     int pin;
-    bool is_held_down(){
+    bool is_held_down() {
       bool current_state = digitalRead( pin );
       if( current_state == false){
         return true;
-        //Serial.println("som dole");
       }
       return false;
     }
@@ -169,42 +157,41 @@ Generator generator_instance;
 
 bool check_1_button(){
   bool animate = false;
-  if( buttons_array[0].was_pressed() ){
+  if( buttons_array[0].was_pressed() ) {
     generator_instance.switch_to_normal();
   }
-  if( buttons_array[0].is_held_down() ){
+  if( buttons_array[0].is_held_down() ) {
     animate = true;
-    //generator_instance.generate_result();//tu budem generovat hod kockou dokola 
   }
   return animate;
 }
 
 void check_2_button(){
-  if(buttons_array[1].was_pressed()){
+  if( buttons_array[1].was_pressed() ) {
    generator_instance.increase_throws();
    generator_instance.switch_to_config();
   }
 }
 
 void check_3_button(){
-  if(buttons_array[2].was_pressed()){
+  if( buttons_array[2].was_pressed() ) {
     generator_instance.increase_sides();
     generator_instance.switch_to_config();
   }
 }
 
-String fill_string_setter(int throws_count, char special_sign, int sides_count){
+String fill_string_setter( int throws_count, char special_sign, int sides_count ) {
   String str_sides_count = "00";
-  if(sides_count != 100){
-    str_sides_count = String(sides_count); 
+  if( sides_count != 100 ) {
+    str_sides_count = String( sides_count ); 
   }
-  String string_setter = String(generator_instance.get_throws()) + generator_instance.get_special_char() + str_sides_count;
+  String string_setter = String( generator_instance.get_throws() ) + generator_instance.get_special_char() + str_sides_count;
   return string_setter;
 }
 void setup() {
-  pinMode(latch_pin, OUTPUT);
-  pinMode(clock_pin, OUTPUT);
-  pinMode(data_pin, OUTPUT);
+  pinMode( latch_pin, OUTPUT );
+  pinMode( clock_pin, OUTPUT );
+  pinMode( data_pin, OUTPUT );
   Serial.begin(9600);
   for( int i = 0; i < number_of_buttons; i++ ) {
     buttons_array[i].pin = button_pins[i];
@@ -218,17 +205,15 @@ void loop() {
   check_2_button();
   check_3_button();
   char setter[number_of_muxpos];
-  String string_setter;
-  string_setter = String(generator_instance.get_result());
-  if( !generator_instance.is_normal_mode() ){
-    string_setter = fill_string_setter( generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides());
+  String string_setter = String( generator_instance.get_result() ); 
+  if( !generator_instance.is_normal_mode() ) {
+    string_setter = fill_string_setter( generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides() );
   }
-  else if( animate ){
+  else if( animate ) {
     generator_instance.generate_result();
     string_setter = generator_instance.get_result();
   }
-  Serial.println(animate);
-  string_setter.toCharArray(setter, number_of_muxpos+1);
-  display_instance.set(setter, number_of_muxpos);
+  string_setter.toCharArray( setter, number_of_muxpos + 1 );
+  display_instance.set ( setter );
   display_instance.show_text();
 }
