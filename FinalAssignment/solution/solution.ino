@@ -42,11 +42,10 @@ void set_OUTPUT_pins() {
 
 class Display{
   private:
-    char *text; 
+    char text[number_of_muxpos]; 
     int displayed_pos;
-    int length = strlen(text);
-    int when_to_show = number_of_muxpos - length;
-    void displayChar( char ch, byte pos ) {
+    const char special_char = 'd';
+    void displayChar( char ch) {
       byte glyph = EMPTY_GLYPH;
       if ( isAlpha( ch ) ) { //checkujem ci char ktory chcem zobrazit je pismeno abecedy
         glyph = LETTER_GLYPH[ ch - ( isUpperCase(ch) ? 'A' : 'a' ) ];
@@ -63,19 +62,22 @@ class Display{
       digitalWrite( latch_pin, HIGH );
     }
     void pos_aritmetic() {
-      displayed_pos  = (displayed_pos + 1) % number_of_muxpos;//( displayed_pos+number_of_muxpos - 1 ) % number_of_muxpos; 
+      displayed_pos  = ( displayed_pos + 1 ) % number_of_muxpos;
     }
   public:
-    void set( const char* message ) {
-      text = message;
-      length = strlen(text);
-      when_to_show = number_of_muxpos - length;
+    void set( const char* setter ) {
+      int i = 0;
+      while( i < number_of_muxpos ){
+        text[i] = setter[i];
+        i++;
+      }
     }
     void show_text() {
-      if(displayed_pos >= when_to_show){
-        displayChar( text[displayed_pos-when_to_show], displayed_pos );
-      }
+      displayChar( text[displayed_pos]);
       pos_aritmetic();
+    }
+    char get_special_symbol(){
+      return special_char;
     }
 };
 
@@ -86,9 +88,8 @@ class Generator {
     const int choices_of_sides = sizeof( sides_of_poly ) / sizeof( sides_of_poly[0] );
     int index_poly;
     int number_of_throws = 1;
-    const char special_char = 'd';
-    bool normal_mode = false;
     int result;
+    bool normal_mode = false;
   public:
     void generate_result() {
       result = 0;
@@ -105,17 +106,14 @@ class Generator {
     int get_sides(){
       return sides_of_poly[index_poly];
     }
-    char get_special_char() {
-      return special_char;
-    }
+
     int get_throws(){
       return number_of_throws;
     }
     void increase_sides(){
-      if ( !normal_mode ){  //pridavat chcem len ak je v configuracnom mode
+      if ( !normal_mode ){  //pridavat chcem len ak je v konfiguracnom mode
         index_poly = ( index_poly + 1 ) % choices_of_sides;
       }
-
     }
     void increase_throws(){
       if ( !normal_mode ){
@@ -139,7 +137,7 @@ class Button {
     int pin;
     bool is_held_down() {
       bool current_state = digitalRead( pin );
-      if( current_state == false){
+      if( current_state == false ){
         return true;
       }
       return false;
@@ -161,39 +159,80 @@ constexpr int number_of_buttons = sizeof( buttons_array ) / sizeof( buttons_arra
 Display display_instance;
 Generator generator_instance;
 
-bool check_1_button(){
-  bool animate = false; //indikator animovania a zaroven generovania vysledku
+int get_number_length(int number){
+  int length = 0;
+  while ( number != 0){
+    number /= 10;
+    length++;
+  }
+  return length;
+}
+int get_digit( int number, int pos ){
+  return number / pos;
+}
+int raise_ten( int lenght ){
+  int i = 0;
+  int raised = 10;
+  while( i < lenght){
+    raised = raised * 10;
+  }
+}
+void fill_setter_result( int result, char* setter ){
+  int length = get_number_length( result );
+  Serial.println(length);
+  int i = 0;
+  int pos = raise_ten( length );
+  while( i < length ){
+    pos = pos / 10;
+    int digit = get_digit( result, pos );
+    result = result - (digit * pos);
+    char chr_res = result;
+    setter[i] = chr_res - '0';
+    i++;
+  }
+}
+void fill_setter_config( int throws, int sides, char* setter ){
+  ;
+}
+
+void check_1_button(){
   if( buttons_array[0].was_pressed() ) {
     generator_instance.switch_to_normal();
   }
   if( buttons_array[0].is_held_down() ) {
-    animate = true;
+    char setter[number_of_muxpos];
+    generator_instance.generate_result();
+    Serial.println("dole");
+    fill_setter_result( generator_instance.get_result(), setter);
+    display_instance.set( setter );
+    // generujem a prenastavujem display
   }
-  return animate;
 }
 
 void check_2_button(){
   if( buttons_array[1].was_pressed() ) {
-   generator_instance.increase_throws();
-   generator_instance.switch_to_config();
+    char setter[number_of_muxpos];
+    generator_instance.increase_throws();
+    generator_instance.switch_to_config();
+    fill_setter_config( generator_instance.get_throws(), generator_instance.get_sides(), setter );
+    display_instance.set( setter );
+   // nastavim display na config hodnoty
   }
 }
 
 void check_3_button(){
   if( buttons_array[2].was_pressed() ) {
+    char setter[number_of_muxpos];
     generator_instance.increase_sides();
     generator_instance.switch_to_config();
+    fill_setter_config( generator_instance.get_throws(), generator_instance.get_sides(), setter );
+    display_instance.set( setter );
+    // nastavim display na config hodnoty
   }
 }
 
-String fill_string_setter( int throws_count, char special_sign, int sides_count ) {
-  String str_sides_count = "00";
-  if( sides_count != 100 ) {
-    str_sides_count = String( sides_count ); 
-  }
-  String string_setter = String( generator_instance.get_throws() ) + generator_instance.get_special_char() + str_sides_count;
-  return string_setter;
-}
+
+
 void setup() {
   Serial.begin(9600);
   pinMode( latch_pin, OUTPUT );
@@ -204,22 +243,14 @@ void setup() {
     pinMode( buttons_array[i].pin, INPUT );
   }
   set_OUTPUT_pins();  
+  char setter[number_of_muxpos];
+  fill_setter_config( generator_instance.get_throws() , generator_instance.get_throws(), setter);
+  display_instance.set(setter);
 }
 
 void loop() {
-  bool animate = check_1_button();
+  check_1_button();
   check_2_button();
   check_3_button();
-  char setter[number_of_muxpos]; //setter v ktorom drzim co chcem zobrazovat
-  String string_setter = String( generator_instance.get_result() ); //primarne nastavim na vysledok hodov
-  if( !generator_instance.is_normal_mode() ) { // ak je generator v konfiguracnom mode chcem zobrazovat hodnoty kocky a hodov
-    string_setter = fill_string_setter( generator_instance.get_throws(), generator_instance.get_special_char(), generator_instance.get_sides() );
-  }
-  else if( animate ) { // ak treba generovat generujem
-    generator_instance.generate_result();
-    string_setter = generator_instance.get_result();
-  }
-  string_setter.toCharArray( setter, number_of_muxpos + 1 );
-  display_instance.set ( setter );
   display_instance.show_text();
 }
