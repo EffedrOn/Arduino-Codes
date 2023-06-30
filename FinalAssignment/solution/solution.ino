@@ -107,7 +107,6 @@ class Generator {
     void increase_throws() {
       number_of_throws = ( number_of_throws % ( throws_modulo - 1 ) ) + 1;
     }
-
 };
 
 class Button {
@@ -149,19 +148,14 @@ int get_number_length( int number ) {
   return length;
 }
 
-int get_digit( int number, int pos ){
-  return number / pos;
-}
-
 void fill_setter_result( int result, char* setter ){
   int length = get_number_length( result );
   for( int i = 1; i <= length; i++ ) {
     setter[length - i] = ( result % 10 ) + '0';
     result /= 10;
   }
-
-
 }
+
 void fill_setter_config( int throws, int sides, char* setter ){
   fill_setter_result( throws, setter );
   setter[1] = special_char;
@@ -175,7 +169,6 @@ void fill_setter_config( int throws, int sides, char* setter ){
 }
 
 void check_1_button(){
-
   if( buttons_array[0].is_held_down() ) {
     char setter[number_of_muxpos] = {' ', ' ', ' ', ' '};
     generator_instance.generate_result();
